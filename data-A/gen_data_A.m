@@ -20,5 +20,5 @@ true_idx(Q(1)+1:Q(1)+Q(2))=2;
 true_idx(Q(1)+Q(2)+1:end)=3;
 gscatter(X(:,1),X(:,2),true_idx);
 
-save('./Data-A.mat',"X");
-save('./true_idx.mat',"true_idx");
+data=[X true_idx];
+save('./Data-A.mat',"data");
