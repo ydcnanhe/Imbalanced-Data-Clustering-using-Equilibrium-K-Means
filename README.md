@@ -39,7 +39,7 @@ rng(0) % for reproducibility
 addpath("./algorithms")
 addpath("./metrics")
 data = iris_dataset; % load the iris dataset
-data = data(1:2,:); % only use the first two features for clustering_Ecoli
+data = data(1:2,:); % only use the first two features for clustering the Iris dataset
 data=data';
 
 % normalization
@@ -99,3 +99,13 @@ If you want to see the average implementation time and the number of iterations,
 ```
 log_time
 ```
+
+# Citation Request
+If you find this repo helpful, please cite our paper
+
+@article{he2024imbalanced,
+  title={Imbalanced Data Clustering using Equilibrium K-Means},
+  author={He, Yudong},
+  journal={arXiv preprint arXiv:2402.14490},
+  year={2024}
+}
