@@ -1,9 +1,9 @@
 # Repository Description
 This repository contains datasets and code for reproducing the results in our paper 
 
-[An Equilibrium Approach to Clustering: Surpassing Fuzzy C-Means on Imbalanced Data](https://ieeexplore.ieee.org/abstract/document/11098663?casa_token=nU3bzhglXaoAAAAA:y8OxfWenI9VPh9ZxYtv3f_m81P0REdr0Dba-8M-o44u7kN4wOj-kGzLa_YdkJm_3k1AYB6mt), IEEE Transactions on Fuzzy Systems, 2025.
+He Yudong, [An Equilibrium Approach to Clustering: Surpassing Fuzzy C-Means on Imbalanced Data](https://ieeexplore.ieee.org/abstract/document/11098663?casa_token=nU3bzhglXaoAAAAA:y8OxfWenI9VPh9ZxYtv3f_m81P0REdr0Dba-8M-o44u7kN4wOj-kGzLa_YdkJm_3k1AYB6mt), IEEE Transactions on Fuzzy Systems, 2025.
 
-[Imbalanced Data Clustering Using Equilibrium K-Means](https://arxiv.org/abs/2402.14490v3), arXiv, 2024.
+He Yudong, [Imbalanced Data Clustering Using Equilibrium K-Means](https://arxiv.org/abs/2402.14490v3), arXiv, 2024.
 
 # Equilibrium K-Means: A K-Means-type Clustering Algorithm for Imbalanced Data
 ## The objective of EKM:
