@@ -1,21 +1,21 @@
 # Repository Description
-This repository contains datasets and codes for reproducing the results in our paper 
+This repository contains datasets and code for reproducing the results in our paper 
 
 [An Equilibrium Approach to Clustering: Surpassing Fuzzy C-Means on Imbalanced Data](https://ieeexplore.ieee.org/abstract/document/11098663?casa_token=nU3bzhglXaoAAAAA:y8OxfWenI9VPh9ZxYtv3f_m81P0REdr0Dba-8M-o44u7kN4wOj-kGzLa_YdkJm_3k1AYB6mt), IEEE Transactions on Fuzzy Systems, 2025.
 
 [Imbalanced Data Clustering Using Equilibrium K-Means](https://arxiv.org/abs/2402.14490v3), arXiv, 2024.
 
-# Equilibrium K-Means: A K-Means type Clustering Algorithm for Imbalanced Data
+# Equilibrium K-Means: A K-Means-type Clustering Algorithm for Imbalanced Data
 ## The objective of EKM:
 
-$$\min_{c_1,\cdots,c_K}\sum_{n=1}^N \left(\sum_{i=1}^K d_{in} e^{-\alpha d_{in}}\right)/\left(\sum_{i=1}^K e^{-\alpha d_{in}}\right),$$
+$$\min_{c_1,\cdots,c_K}\sum_{n=1}^N \left(\sum_{i=1}^K d^2_{in} e^{-\alpha d^2_{in}}\right)/\left(\sum_{i=1}^K e^{-\alpha d^2_{in}}\right),$$
 where $c_1,\cdots,c_K$ are K centroids as centers of clusters, $d_{in}$ is the distance (usually the Euclidean distance) between $n$-th data point and $i$-th centroid, and $\alpha$ is a parameter to be tuned.
 
 ## Optimization by a two-step iteration algorithm:
 
 Step 1. Computing weights:
 
-$$w_{kn}^{(\tau)}=\frac{e^{-\alpha d_{kn}^{(\tau)}}}{\sum_i e^{-\alpha d_{in}^{(\tau)}}} [1-\alpha(d_{kn}^{(\tau)}-\frac{\sum_i d_{in}^{(\tau)}e^{-\alpha d_{in}^{(\tau)}}}{\sum_i e^{-\alpha d_{in}^{(\tau)}}})]$$
+$$w_{kn}^{(\tau)}=\frac{e^{-\alpha (d_{kn}^{(\tau)})^2}}{\sum_i e^{-\alpha (d_{in}^{(\tau)})^2}} [1-\alpha((d_{kn}^{(\tau)})^2-\frac{\sum_i (d_{in}^{(\tau)})^2e^{-\alpha (d_{in}^{(\tau)})^2}}{\sum_i e^{-\alpha (d_{in}^{(\tau)})^2}})]$$
 
 Step 2. Computing weighted centroids:
 
@@ -34,7 +34,7 @@ EKM converges when centroids cease to change or the maximum number of iterations
 Install Matlab 2022a (or the latest version), and download this repository to your local directory.
 
 # Clustering a Dataset
-EKM is embbeded in the function "smooth_kmeans.m" which you can find in "algorithms". To implement EKM clustering, you shall set the parameter 'SmoothMethod' to 'Boltzmann' and set the parameter 'SmoothCoefficient' properly (this parameter is the $\alpha$ in our paper).
+EKM is embedded in the function "smooth_kmeans.m" which you can find in "algorithms". To implement EKM clustering, you shall set the parameter 'SmoothMethod' to 'Boltzmann' and set the parameter 'SmoothCoefficient' properly (this parameter is the $\alpha$ in our paper).
 
 Below is an example of using EKM to cluster the iris dataset.
 
