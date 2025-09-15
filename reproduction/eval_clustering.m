@@ -98,9 +98,9 @@ function eval_clustering(X,num_class,true_idx,replicate,alpha,output,is_plot,is_
     save([output  '/ekm/dcv_ekm.mat'],"dcv_ekm");
     save([output  '/ekm/J_ekm.mat'],"J_ekm");
 
-    fprintf('best and avg +- std of nmi for ekm: %.4f and %.4f +- %.4f \n',nmi_ekm(best_id),mean(nmi_ekm),std(nmi_ekm));
-    fprintf('best and avg +- std of ari for ekm: %.4f and %.4f +- %.4f \n',ari_ekm(best_id),mean(ari_ekm),std(ari_ekm));
-    fprintf('best and avg +- std of acc for ekm: %.4f and %.4f +- %.4f \n',acc_ekm(best_id),mean(acc_ekm),std(acc_ekm));
+    fprintf('The replicate with the lowest objective and avg +- std of nmi for ekm: %.4f and %.4f +- %.4f \n',nmi_ekm(best_id),mean(nmi_ekm),std(nmi_ekm));
+    fprintf('The replicate with the lowest objective and avg +- std of ari for ekm: %.4f and %.4f +- %.4f \n',ari_ekm(best_id),mean(ari_ekm),std(ari_ekm));
+    fprintf('The replicate with the lowest objective and avg +- std of acc for ekm: %.4f and %.4f +- %.4f \n',acc_ekm(best_id),mean(acc_ekm),std(acc_ekm));
     fprintf('avg it for ekm: %.4f \n',mean(numit_ekm));
     fprintf('avg time for ekm: %.4f \n',mean(time_ekm));
     fprintf('\n')
