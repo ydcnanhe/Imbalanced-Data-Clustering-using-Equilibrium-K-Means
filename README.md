@@ -1,5 +1,5 @@
 # Repository Description
-This repository contains datasets and code for reproducing the results in our paper 
+This repository contains datasets and code for reproducing the results in our paper
 
 He Yudong, [An Equilibrium Approach to Clustering: Surpassing Fuzzy C-Means on Imbalanced Data](https://ieeexplore.ieee.org/abstract/document/11098663?casa_token=nU3bzhglXaoAAAAA:y8OxfWenI9VPh9ZxYtv3f_m81P0REdr0Dba-8M-o44u7kN4wOj-kGzLa_YdkJm_3k1AYB6mt), IEEE Transactions on Fuzzy Systems, 2025.
 
@@ -34,7 +34,7 @@ EKM converges when centroids cease to change or the maximum number of iterations
 Install Matlab 2022a (or the latest version), and download this repository to your local directory.
 
 # Clustering a Dataset
-EKM is embedded in the function "smooth_kmeans.m" which you can find in "algorithms". To implement EKM clustering, you shall set the parameter 'SmoothMethod' to 'Boltzmann' and set the parameter 'SmoothCoefficient' properly (this parameter is the $\alpha$ in our paper).
+You can find "ekm.m", a matlab function in which ekm is implemented, in the folder of "algorithms".
 
 Below is an example of using EKM to cluster the iris dataset.
 
@@ -67,7 +67,8 @@ legend off
 
 % clustering by EKM
 alpha=1;
-[label_ekm,C,~,~,~,~,~,~]=smooth_kmeans(data,3,'Replicates',1,'SmoothMethod','Boltzmann','SmoothCoefficient',alpha);
+K=3; % # of clusters
+[label_ekm,C]=ekm(data,3);
 
 % scatter diagram of EKM clustering
 figure;
