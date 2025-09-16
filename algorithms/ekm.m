@@ -4,7 +4,7 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
 % Created at June, 2024
 % Last modified at June, 2025
 % Author: Yudong He
-% Email: yhebh@connect.ust.hk/yudong@ust.hk
+% Email: yhebh@connect.ust.hk
 % Tested Matlab version: R2022a
 %% Description:
 %
@@ -46,7 +46,10 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Reference
-% 
+% He Yudong, An Equilibrium Approach to Clustering: Surpassing Fuzzy C-Means
+% on Imbalanced Data, IEEE Transactions on Fuzzy Systems, 2025.
+
+% He Yudong, Imbalanced Data Clustering Using Equilibrium K-Means, arXiv, 2024.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
