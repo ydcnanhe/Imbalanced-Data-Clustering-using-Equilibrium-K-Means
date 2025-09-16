@@ -2,7 +2,14 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClusterMixin
 class EKM(BaseEstimator, ClusterMixin):
     """
-    Equilibrium K-means (EKM) - a robust variant of K-means.
+    Information
+    ----------
+    Equilibrium K-means (EKM) - a robust variant of K-means for imbalanced data clustering.
+    Version 1
+    Created at Sep, 2025
+    Last modified at Sep, 2025
+    Author: Yudong He
+    Email: yhebh@connect.ust.hk
     
     Parameters
     ----------
@@ -24,6 +31,18 @@ class EKM(BaseEstimator, ClusterMixin):
         Initialization method: 'plus' (k-means++) or ndarray of initial centers.
     random_state : int, optional
         Seed for reproducibility.
+
+    Reference
+    ---------
+    He Yudong, An Equilibrium Approach to Clustering: Surpassing Fuzzy C-Means on Imbalanced Data, IEEE Transactions on Fuzzy Systems, 2025.
+
+    He Yudong, Imbalanced Data Clustering Using Equilibrium K-Means, arXiv, 2024.
+
+    Copyright
+    ---------
+    This software is distributed under the terms of the GNU Public License version 3 (http://www.gnu.org/licenses/gpl.txt)
+
+    ---------
     """
     def __init__(self, n_clusters=3, distance='sqeuclidean', alpha=0.5, scale=2.0,
                  max_iter=500, tol=1e-3, n_init=1, init='plus', random_state=None):
