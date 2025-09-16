@@ -12,8 +12,9 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
 % X : N-by-P numeric matrix. Data matrix containing N samples with P features.
 % K : positive integer. Number of clusters.
 % options : Struct containing optional parameters that govern the algorithm's behavior.
-% - Distance: 'sqeuclidean' (default) | 'cosine'. Method for defining similarity.
-%   'sqeuclidean': squared euclidean distance. 'cosine': cosine
+% - Distance: 'euclidean' (default) | 'manhattan'
+%   'euclidean': euclidean distance or l2 norm.
+%   'manhattan': manhattan distance or l1 norm.
 %
 % - alpha: double (default 0.5) | "dvariance". Smoothing parameter or method to calculate the smoothing parameter.
 %   'dvariance': data variance.
@@ -62,7 +63,7 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
     arguments
         X (:,:) double {mustBeNonempty, mustBeFinite, mustBeReal}
         K double {mustBeInteger, mustBePositive}
-        options.Distance char {mustBeText} = 'sqeuclidean'
+        options.metric char {mustBeText} = 'euclidean'
         options.alpha = 0.5
         options.MaxIter double {mustBeInteger, mustBePositive} = 500
         options.Eta double {mustBePositive} = 1e-3 % for convergence
@@ -78,11 +79,11 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
     end
    
     % Define distance function based on user selection
-    switch options.Distance
-        case 'sqeuclidean'
-            dist = @sqeuclidean;
-        case 'cosine'
-            dist = @cosine;
+    switch options.metric
+        case 'euclidean'
+            dist = @euclidean;
+        case 'manhattan'
+            dist = @manhattan;
         otherwise
             error('Unsupported distance metric specified.');
     end
@@ -91,7 +92,7 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
     if ischar(options.alpha)
         switch options.alpha
             case 'dvariance'
-                options.alpha = 2/(mean(dist(X,mean(X)))); % determine alpha based on data variance
+                options.alpha = 2/(mean(dist(X,mean(X)).^2)); % determine alpha based on data variance
             otherwise
                 error('Unsupported alpha type specified.');
         end
@@ -150,7 +151,7 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
         
         %% Calculate objectives
         D = dist(X, C);
-        J = sum(sum(D .* exp(-options.alpha * D), 2) ./ (sum(exp(-options.alpha * D), 2) + eps));
+        J = sum(sum(D.^2 .* exp(-options.alpha * D.^2), 2) ./ (sum(exp(-options.alpha * D.^2), 2) + eps));
         J_set(r) = J;
         C_set(:, :, r) = C; % Store centroids
         numit_set(r) = it; % Store number of iterations
@@ -172,7 +173,7 @@ function [idx, C, numit, W, U, sumd, D, J] = ekm(X, K, options)
     % Compute weights
     W = calc_weight(D, options.alpha);
     % Compute membership
-    U = exp(-options.alpha .* D) ./ (sum(exp(-options.alpha .* D), 2) + eps); % Normalized memberships
+    U = exp(-options.alpha .* D.^2) ./ (sum(exp(-options.alpha .* D.^2), 2) + eps); % Normalized memberships
 end
 
 function C = kmeans_plus_init(X, K)
@@ -190,32 +191,33 @@ function C = kmeans_plus_init(X, K)
     C=C'; % K-by-P matrix
 end
 
-function D = sqeuclidean(X, C)
-    % Squared Euclidean distance computation
+function D = euclidean(X, C)
+    % Euclidean distance computation
     % X: N-by-P matrix; C: K-by-P matrix
     N=size(X,1);
     K=size(C,1);
     D = zeros(N, K);
     for k = 1:K
-        D(:, k) = vecnorm(X - C(k, :), 2, 2).^2; % Calculate squared distance vector
+        D(:, k) = vecnorm(X - C(k, :), 2, 2); % Calculate euclideaan distance vector
     end
 end
 
-function D = cosine(X, C)
-    % Cosine distance computation
+function D = manhattan(X, C)
+    % Manhattan distance computation
+    % X: N-by-P matrix; C: K-by-P matrix
     N=size(X,1);
-    K = size(C, 1);
+    K=size(C,1);
     D = zeros(N, K);
     for k = 1:K
-        D(:, k) = 1 - X * C(k, :)' ./ (vecnorm(X, 2, 2) * norm(C(k, :), 2)); % Calculate cosine distance
+        D(:, k) = sum(abs(X - C(k, :)), 2); % Calculate euclideaan distance vector
     end
 end
 
 function W = calc_weight(D, alpha)
     % Calculate weights based on distances D and smoothing parameter alpha
     K=size(D,2);
-    J=sum(D.*exp(-alpha*D),2)./(sum(exp(-alpha*D),2)+eps); % objectives contributed by N points individually
-    W=exp(-alpha*D)./repmat(sum(exp(-alpha*D),2)+eps,1,K).*(1-alpha*(D-repmat(J,1,K)));
+    J=sum(D.^2.*exp(-alpha*D.^2),2)./(sum(exp(-alpha*D.^2),2)+eps); % objectives contributed by N points individually
+    W=exp(-alpha*D.^2)./repmat(sum(exp(-alpha*D.^2),2)+eps,1,K).*(1-alpha*(D.^2-repmat(J,1,K)));
     % prevent all 0 membership because of numerical precision
     zero_idx=find(sum(W,2)==0);
     [~,pos]=min(D(zero_idx,:),[],2);

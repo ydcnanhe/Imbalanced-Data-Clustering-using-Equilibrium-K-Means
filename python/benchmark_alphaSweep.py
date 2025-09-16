@@ -32,7 +32,7 @@ for seed in range(N_REPEATS):
     results_km["Silhouette"].append(silhouette_score(X, labels_km))
     # 3. 不同 α 的 EKM
     for scale in scale_list:
-        ekm = EKM(n_clusters=N_CLUSTERS, distance='sqeuclidean',
+        ekm = EKM(n_clusters=N_CLUSTERS, metric='euclidean',
                   alpha='dvariance',scale=scale, n_init=10, random_state=seed)
         labels_ekm = ekm.fit_predict(X)
         results_ekm[scale]["ARI"].append(adjusted_rand_score(y_true, labels_ekm))

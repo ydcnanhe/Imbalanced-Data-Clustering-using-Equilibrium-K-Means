@@ -30,7 +30,7 @@ for seed in range(N_REPEATS):
     ari_results["KMeans"].append(adjusted_rand_score(y_true, labels_km))
     sil_results["KMeans"].append(silhouette_score(X, labels_km))
     # 3. EKM
-    ekm = EKM(n_clusters=N_CLUSTERS, distance='sqeuclidean',
+    ekm = EKM(n_clusters=N_CLUSTERS, metric='euclidean',
               alpha='dvariance', n_init=10, random_state=seed)
     labels_ekm = ekm.fit_predict(X)
     ari_results["EKM"].append(adjusted_rand_score(y_true, labels_ekm))
