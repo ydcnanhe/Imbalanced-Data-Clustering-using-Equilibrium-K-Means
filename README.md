@@ -30,7 +30,10 @@ EKM converges when centroids cease to change or the maximum number of iterations
 ![image](https://github.com/ydcnanhe/Imbalanced-Data-Clustering-using-Equilibrium-K-Means/assets/52923246/9ac03f80-d7d6-4a84-b2b9-f90bfc78259c)
 ![image](https://github.com/ydcnanhe/Imbalanced-Data-Clustering-using-Equilibrium-K-Means/assets/52923246/552dccda-5f80-4810-a258-fbd56f4ea041)
 
-# How To Use
+# How To Use (Python)
+You can find the Python version in the "python" folder. EKM's functionality is packaged in "ekm_sklearn.py" in the sklearn style, and examples and benchmarks are provided.
+
+# How To Use (Matlab)
 Install Matlab 2022a (or the latest version), and download this repository to your local directory.
 
 # Clustering a Dataset
