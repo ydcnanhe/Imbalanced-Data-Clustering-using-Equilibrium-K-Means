@@ -25,8 +25,8 @@ class EKM(BaseEstimator, ClusterMixin):
     ----------
     Equilibrium K-means (EKM) - a robust variant of K-means for imbalanced data clustering.
     Version 1
-    Created at Sep, 2025
-    Last modified at Sep, 2025
+    Created at 16, Sep, 2025
+    Last modified at 16, Sep, 2025
     Author: Yudong He
     Email: yhebh@connect.ust.hk
     
