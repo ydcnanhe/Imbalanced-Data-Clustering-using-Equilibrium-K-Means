@@ -1,5 +1,7 @@
 # Imbalanced Data Clustering using Equilibrium K-Means (EKM)
 
+English | [中文说明](./README_zh.md) | API: [English](./ekm_api.md) | [中文](./ekm_api_zh.md)
+
 > A research / experimental implementation of Equilibrium K-Means (EKM) and its Mini-Batch variant for clustering highly imbalanced datasets. Includes benchmarking utilities, parameter sensitivity studies, and optional numba acceleration.
 
 ## Contents Overview
@@ -13,15 +15,16 @@
 | `benchmark_minibatch_compare.py` | Compares full-batch `EKM` vs MiniBatchEKM (accumulation vs online / learning rate) on an imbalanced Gaussian dataset; reports timing + ARI + NMI + objective approximation. |
 | `benchmark_numba_ekm.py` | Benchmarks full-batch `EKM` with and without numba acceleration on a higher-dimensional imbalanced dataset; reports mean/std timings and speedup. |
 | `requirements.txt` | Minimal dependencies (NumPy, scikit-learn). Optional: install `numba` and `matplotlib` for acceleration and plotting. |
+| `ekm_api.md` / `ekm_api_zh.md` | Detailed API reference (English / Chinese) for `EKM` and `MiniBatchEKM`. |
 
 ## Algorithm Summary
 
 Equilibrium K-Means (EKM) modifies the K-Means update using a stabilized equilibrium weighting:
-1. Compute squared distances \(D^2\) between points and current centers.
-2. Soft assignments via \(U_{ik} \propto e^{-\alpha D^2_{ik}}\) (row-wise stabilized by shifting minima for numerical safety).
-3. Equilibrium weights \(W_{ik} = U_{ik} (1 - \alpha (D^2_{ik} - J_i))\) with \(J_i = \sum_k U_{ik} D^2_{ik}\).
-4. Update centers using weighted averages under \(W\); reassign degenerate rows to nearest centers if needed.
-5. Objective (approximate form used for monitoring): \(\sum_i J_i\).
+1. Compute squared distances $$D^2$$ between points and current centers.
+2. Soft assignments via $$U_{ik} \propto e^{-\alpha D^2_{ik}}$$ (row-wise stabilized by shifting minima for numerical safety).
+3. Equilibrium weights $$W_{ik} = U_{ik} (1 - \alpha (D^2_{ik} - J_i))$$ with $$J_i = \sum_k U_{ik} D^2_{ik}$$.
+4. Update centers using weighted averages under $$W$$; reassign degenerate rows to nearest centers if needed.
+5. Objective (approximate form used for monitoring): $$\sum_i J_i$$.
 
 Mini-batch variant supports two update modes:
 - Accumulation (default): maintain running sums / weights (approaches full-batch solution). 
@@ -83,6 +86,15 @@ model.fit(X)
 ```
 Numba will JIT compile on first use; consider a warm-up call with a small subset before benchmarking.
 
+## Documentation Site (MkDocs)
+
+Build a local documentation site:
+```bash
+pip install mkdocs mkdocs-material mkdocstrings mkdocstrings-python
+mkdocs serve   # preview at http://127.0.0.1:8000
+mkdocs build   # generate static site in site/
+```
+
 ## Benchmarks
 
 1. `benchmark.py`: Repeated ARI & Silhouette comparison `KMeans` vs `EKM` (Monte Carlo).  
@@ -100,11 +112,11 @@ python benchmark_numba_ekm.py
 ## File Details
 
 ### `ekm_sklearn.py`
-- `EKM`: Full-batch algorithm; parameters:
+- [`EKM`](./ekm_api.md#ekm-full-batch): Full-batch algorithm; parameters:
   - `alpha`: numeric or `'dvariance'` (auto-compute via data variance * `scale`).
   - `use_numba`: toggle accelerated weight computation.
   - `n_init`: multiple random restarts (when `init='plus'`).
-- `MiniBatchEKM`: Adds `batch_size`, `max_epochs`, `learning_rate`, `reassign_patience`, `monitor_size`, `print_every`.
+- [`MiniBatchEKM`](./ekm_api.md#minibatchekm): Adds `batch_size`, `max_epochs`, `learning_rate`, `reassign_patience`, `monitor_size`, `print_every`.
 - Helper functions: `_pairwise_distance`, `_kmeans_plus_init`, `calc_weight`.
 
 ### `example.py`

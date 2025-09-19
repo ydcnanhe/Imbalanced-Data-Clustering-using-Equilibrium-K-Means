@@ -2,3 +2,10 @@ numpy>=1.21
 scikit-learn>=1.0
 # Optional acceleration
 numba>=0.57 ; extra == "numba"
+## Optional plotting
+matplotlib>=3.5 ; extra == "plot"
+## Optional documentation build
+mkdocs>=1.5 ; extra == "docs"
+mkdocs-material>=9.5 ; extra == "docs"
+mkdocstrings>=0.24 ; extra == "docs"
+mkdocstrings-python>=1.8 ; extra == "docs"
