@@ -67,3 +67,23 @@ axs[1].set_title("Silhouette Distribution")
 axs[1].set_ylabel("Silhouette Score")
 plt.suptitle("Monte Carlo Benchmark ({} runs)".format(N_REPEATS), fontsize=14)
 plt.show()
+
+# ------------------
+# 聚类结果可视化（使用最后一次实验的数据）
+# ------------------
+# 在上面的循环结束后，变量 X, y_true, labels_km, labels_ekm, km, ekm 保存的是最后一个 seed 的结果
+fig2, axes2 = plt.subplots(1, 3, figsize=(15, 4))
+axes2[0].scatter(X[:, 0], X[:, 1], c=y_true, s=10, cmap='tab10', alpha=0.75)
+axes2[0].set_title('True Labels')
+axes2[1].scatter(X[:, 0], X[:, 1], c=labels_km, s=10, cmap='tab10', alpha=0.75)
+axes2[1].scatter(km.cluster_centers_[:, 0], km.cluster_centers_[:, 1], c='black', s=120, marker='X', edgecolor='white', linewidths=1)
+axes2[1].set_title('KMeans Clusters')
+axes2[2].scatter(X[:, 0], X[:, 1], c=labels_ekm, s=10, cmap='tab10', alpha=0.75)
+axes2[2].scatter(ekm.cluster_centers_[:, 0], ekm.cluster_centers_[:, 1], c='black', s=120, marker='X', edgecolor='white', linewidths=1)
+axes2[2].set_title('EKM Clusters')
+for ax in axes2:
+    ax.set_xticks([])
+    ax.set_yticks([])
+fig2.suptitle('Cluster Result Visualization (Last Run)', fontsize=14)
+fig2.tight_layout()
+plt.show()
