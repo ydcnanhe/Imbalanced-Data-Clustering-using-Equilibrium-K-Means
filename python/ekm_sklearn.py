@@ -186,7 +186,7 @@ class EKM(BaseEstimator, ClusterMixin):
             if isinstance(self.init, np.ndarray):
                 C = self.init.copy()
             elif self.init == 'plus':
-                C = _kmeans_plus_init(X, K, self.metric, random_state=self.random_state)
+                C = _kmeans_plus_init(X, K, self.metric)
             else:
                 raise ValueError("Unsupported init method.")
             C_old = C.copy()
@@ -322,7 +322,7 @@ class MiniBatchEKM(BaseEstimator, ClusterMixin):
         if isinstance(self.init, np.ndarray):
             C = self.init.astype(float).copy()
         elif self.init == 'plus':
-            C = _kmeans_plus_init(X, K, self.metric, random_state=self.random_state).astype(float)
+            C = _kmeans_plus_init(X, K, self.metric).astype(float)
         else:
             raise ValueError("Unsupported init method.")
         return C
