@@ -21,6 +21,7 @@ from typing import List, Tuple
 import numpy as np
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, silhouette_score
 from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 from ekm_sklearn import EKM
 
 try:
@@ -71,15 +72,15 @@ def gen_dirichlet_mixture(n_samples: int, k_true: int, dim: int, seed: int, imba
 
 # ------------- main single run ------------- #
 
-def run_once(X: np.ndarray, y: np.ndarray, K: int, seed: int, compute_sil: bool, sil_subsample: int) -> RunStats:
+def run_once(X: np.ndarray, y: np.ndarray, K: int, seed: int, compute_sil: bool, sil_subsample: int):
     # KMeans (sklearn)
     t0 = time.perf_counter()
-    km = KMeans(n_clusters=K, n_init=10, random_state=seed)
+    km = KMeans(n_clusters=K, n_init=50, random_state=seed)
     labels_km = km.fit_predict(X)
     t1 = time.perf_counter()
     # EKM
     t2 = time.perf_counter()
-    ekm = EKM(n_clusters=K, alpha='dvariance', scale=2.0, n_init=5, random_state=seed)
+    ekm = EKM(n_clusters=K, alpha='dvariance', scale=2.0, n_init=50, random_state=seed)
     labels_ekm = ekm.fit_predict(X)
     t3 = time.perf_counter()
 
@@ -119,7 +120,7 @@ def run_once(X: np.ndarray, y: np.ndarray, K: int, seed: int, compute_sil: bool,
     D2 = euclidean_distances(X, ekm.cluster_centers_) ** 2
     sse_ekm = float(np.min(D2, axis=1).sum())
 
-    return RunStats(
+    stats = RunStats(
         seed=seed,
         ari_km=ari_km,
         ari_ekm=ari_ekm,
@@ -133,6 +134,8 @@ def run_once(X: np.ndarray, y: np.ndarray, K: int, seed: int, compute_sil: bool,
         time_km=t1 - t0,
         time_ekm=t3 - t2,
     )
+    # Return also raw artifacts for optional cluster plotting
+    return stats, (km, ekm, labels_km, labels_ekm)
 
 # ------------- aggregation ------------- #
 
@@ -176,8 +179,12 @@ def run(args):
     X, y = gen_dirichlet_mixture(args.n_samples, args.n_clusters, args.dim, args.seed, args.imbalance)
     seeds = [args.seed + i for i in range(args.n_runs)]
     results: List[RunStats] = []
+    # optional keep first run artifacts for plotting
+    first_artifacts = None
     for s in seeds:
-        r = run_once(X, y, args.n_clusters, s, args.silhouette, args.silhouette_subsample)
+        r, artifacts = run_once(X, y, args.n_clusters, s, args.silhouette, args.silhouette_subsample)
+        if first_artifacts is None:
+            first_artifacts = artifacts  # (km, ekm, labels_km, labels_ekm)
         results.append(r)
         if args.verbose:
             print(f"seed {s:4d} | ARI km {r.ari_km:.4f} ekm {r.ari_ekm:.4f} | NMI km {r.nmi_km:.4f} ekm {r.nmi_ekm:.4f} | SSE km {r.sse_km:.1f} ekm {r.sse_ekm:.1f} | time km {r.time_km*1e3:.1f}ms ekm {r.time_ekm*1e3:.1f}ms")
@@ -212,20 +219,87 @@ def run(args):
     if args.plot:
         plot_box(results, args)
 
+    if args.plot_clusters:
+        if not _MPL:
+            print('[Warn] matplotlib not installed; cannot produce cluster plot.')
+        else:
+            km, ekm, labels_km, labels_ekm = first_artifacts  # type: ignore
+            cluster_plot(X, y, km, ekm, labels_km, labels_ekm, args)
+
+def _project_data(X: np.ndarray, method: str, seed: int):
+    if method == 'pca':
+        if X.shape[1] <= 2:
+            return X[:, :2], None
+        pca = PCA(n_components=2, random_state=seed)
+        return pca.fit_transform(X), pca
+    else:
+        raise ValueError(f'Unknown projection method {method}')
+
+def cluster_plot(X: np.ndarray, y: np.ndarray, km, ekm, labels_km, labels_ekm, args):
+    proj_X, proj_model = _project_data(X, args.cluster_plot_method, args.cluster_plot_seed)
+    # Optionally subsample for clarity
+    if args.cluster_plot_subsample > 0 and proj_X.shape[0] > args.cluster_plot_subsample:
+        rng = np.random.default_rng(args.cluster_plot_seed)
+        idx = rng.choice(proj_X.shape[0], size=args.cluster_plot_subsample, replace=False)
+    else:
+        idx = np.arange(proj_X.shape[0])
+    Xp = proj_X[idx]
+    y_true = y[idx]
+    y_km = labels_km[idx]
+    y_ekm = labels_ekm[idx]
+
+    # project centers
+    def proj_centers(C):
+        if proj_model is None and C.shape[1] >= 2:
+            return C[:, :2]
+        if proj_model is None:  # already 2D or 1D
+            if C.shape[1] == 1:
+                return np.hstack([C, np.zeros((C.shape[0], 1))])
+            return C
+        return proj_model.transform(C)
+
+    C_km = proj_centers(km.cluster_centers_)
+    C_ekm = proj_centers(ekm.cluster_centers_)
+
+    import matplotlib.pyplot as plt
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+    sc0 = axes[0].scatter(Xp[:,0], Xp[:,1], c=y_true, s=10, cmap='tab10', alpha=0.7)
+    axes[0].set_title('True Labels (proj)')
+    sc1 = axes[1].scatter(Xp[:,0], Xp[:,1], c=y_km, s=10, cmap='tab10', alpha=0.7)
+    axes[1].scatter(C_km[:,0], C_km[:,1], marker='X', c='black', s=120, edgecolor='white', linewidths=1.2)
+    axes[1].set_title('KMeans Clusters')
+    sc2 = axes[2].scatter(Xp[:,0], Xp[:,1], c=y_ekm, s=10, cmap='tab10', alpha=0.7)
+    axes[2].scatter(C_ekm[:,0], C_ekm[:,1], marker='X', c='black', s=120, edgecolor='white', linewidths=1.2)
+    axes[2].set_title('EKM Clusters')
+    for ax in axes:
+        ax.set_xticks([]); ax.set_yticks([])
+    fig.suptitle('Cluster Projection ({} -> 2D via {})'.format(X.shape[1], args.cluster_plot_method.upper()))
+    fig.tight_layout()
+    if args.cluster_plot_save:
+        fig.savefig(args.cluster_plot_save, dpi=200)
+        print(f'[Plot] saved cluster projection to {args.cluster_plot_save}')
+    plt.show()
+
 # ------------- CLI ------------- #
 
 def parse_args():
     ap = argparse.ArgumentParser(description='High-dimensional Dirichlet imbalance benchmark: KMeans vs EKM')
     ap.add_argument('--n-samples', type=int, default=6000, help='Total samples')
-    ap.add_argument('--n-clusters', type=int, default=6, help='True & target clusters')
-    ap.add_argument('--dim', type=int, default=20, help='Feature dimensionality')
-    ap.add_argument('--n-runs', type=int, default=30, help='Monte Carlo repetitions (different seeds)')
+    ap.add_argument('--n-clusters', type=int, default=3, help='True & target clusters')
+    ap.add_argument('--dim', type=int, default=10, help='Feature dimensionality')
+    ap.add_argument('--n-runs', type=int, default=1, help='Monte Carlo repetitions (different seeds)')
     ap.add_argument('--seed', type=int, default=42, help='Base random seed')
-    ap.add_argument('--imbalance', type=float, default=8.0, help='Dirichlet boost factor for first cluster')
+    ap.add_argument('--imbalance', type=float, default=50, help='Dirichlet boost factor for first cluster')
     ap.add_argument('--silhouette', action='store_true', help='Compute silhouette (may be slow)')
     ap.add_argument('--silhouette-subsample', type=int, default=4000, help='Subsample size for silhouette if dataset bigger')
     ap.add_argument('--plot', action='store_true', help='Generate boxplots if matplotlib available')
     ap.add_argument('--save-plot', type=str, default='', help='Save boxplot figure to file')
+    # cluster projection plotting
+    ap.add_argument('--plot-clusters', action='store_true', help='Plot 2D projection (PCA) for one run (first seed) with true labels, KMeans, EKM')
+    ap.add_argument('--cluster-plot-method', type=str, default='pca', choices=['pca'], help='Projection method')
+    ap.add_argument('--cluster-plot-subsample', type=int, default=6000, help='Subsample points for cluster plot (0 = no subsample)')
+    ap.add_argument('--cluster-plot-seed', type=int, default=123, help='Random seed for subsampling / projection reproducibility')
+    ap.add_argument('--cluster-plot-save', type=str, default='', help='Save cluster projection figure')
     ap.add_argument('--save-csv', type=str, default='', help='Write per-run CSV stats')
     ap.add_argument('--verbose', action='store_true', help='Print per-run details')
     return ap.parse_args()
