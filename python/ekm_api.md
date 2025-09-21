@@ -35,7 +35,7 @@ The Equilibrium K-Means objective refines standard K-Means by weighting assignme
 | `max_iter` | int | 500 | Maximum iterations per replicate. |
 | `tol` | float | 1e-3 | Relative Frobenius norm tolerance for convergence (`||C-C_old||/||C||`). |
 | `n_init` | int | 1 | Number of random restarts (when `init='plus'`). Best objective retained. |
-| `init` | `'plus'` or ndarray | `'plus'` | Initialization: k-means++ or user-provided centers (shape `(K, d)`). |
+| `init` | `'plus'` or ndarray | `'plus'` | Initialization: For Euclidean metric uses sklearn `kmeans_plusplus`; otherwise falls back to internal routine; or user-provided centers `(K, d)`. |
 | `random_state` | int or None | None | RNG seed for reproducibility. |
 | `use_numba` | bool | False | Enable numba-accelerated weight computation (if available). |
 | `numba_threads` | int or None | None | Manually set numba thread count. |
@@ -71,6 +71,7 @@ The Equilibrium K-Means objective refines standard K-Means by weighting assignme
 
 ### EKM Behavioral Notes & Edge Cases
 - If a cluster center receives effectively zero total weight, it may drift slowly; consider multiple `n_init` for robustness.
+- Euclidean initialization leverages sklearn's `kmeans_plusplus` (fast & numerically stable); non-Euclidean distances revert to a Python implementation.
 - When `alpha` is large, weights concentrate—risk of singular updates; adjust `scale` or use lower `alpha`.
 - Manhattan metric performance may be slower (no numba special-case distance). Centers are still updated by weighted mean (not geometric median), which is an approximation under L1.
 

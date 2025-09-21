@@ -9,4 +9,4 @@
 - [MiniBatchEKM](https://github.com/ydcnanhe/Imbalanced-Data-Clustering-using-Equilibrium-K-Means/blob/main/python/ekm_api_zh.md)
 
 ## 说明
-当前使用手写 Markdown 以便更好控制公式与中英文双语。将来若拆分为包，可启用 `mkdocstrings` 自动提取。
+当前使用手写 Markdown 以便更好控制公式与中英文双语。`metric='euclidean'` 下初始化已改为使用 sklearn `kmeans_plusplus`；其它距离继续内部回退。将来若拆分为包，可启用 `mkdocstrings` 自动提取。

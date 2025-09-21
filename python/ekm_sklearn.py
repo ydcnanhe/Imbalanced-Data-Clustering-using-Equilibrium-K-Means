@@ -1,6 +1,11 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.metrics.pairwise import euclidean_distances, manhattan_distances
+try:  # sklearn k-means++ initializer
+    from sklearn.cluster import kmeans_plusplus as _sk_kmeans_plusplus
+    _SKLEARN_KPP_AVAILABLE = True
+except Exception:  # pragma: no cover
+    _SKLEARN_KPP_AVAILABLE = False
 # Optional: numba acceleration for weight computation
 try:
     from numba import njit, prange, set_num_threads
@@ -15,15 +20,30 @@ def _pairwise_distance(X, Y=None, metric="euclidean"):
         return manhattan_distances(X, Y)
     else:
         raise ValueError(f"Unsupported distance: {metric}")
-def _kmeans_plus_init(X, K, metric="euclidean"):
+def _kmeans_plus_init(X, K, metric="euclidean", random_state=None):
+    """Initialize centers using sklearn's `kmeans_plusplus` when metric is Euclidean.
+
+    Falls back to internal implementation for non-Euclidean metrics or when
+    sklearn's routine is unavailable.
+    """
+    if metric == "euclidean" and _SKLEARN_KPP_AVAILABLE:
+        centers, _ = _sk_kmeans_plusplus(X, n_clusters=K, random_state=random_state)
+        return centers.astype(float, copy=False)
+    # Fallback: original manual k-means++ (works for both metrics, but uses chosen metric)
     N, P = X.shape
-    C = np.empty((K, P))
-    idx = np.random.randint(N)
+    C = np.empty((K, P), dtype=float)
+    rng = np.random.RandomState(random_state)
+    idx = rng.randint(N)
     C[0] = X[idx]
     for k in range(1, K):
         D2 = np.min(_pairwise_distance(X, C[:k], metric)**2, axis=1)
-        probs = D2 / np.sum(D2)
-        idx = np.random.choice(N, p=probs)
+        total = np.sum(D2)
+        if not np.isfinite(total) or total <= 0:
+            # degenerate fallback: random choice without weighting
+            idx = rng.randint(N)
+        else:
+            probs = D2 / total
+            idx = rng.choice(N, p=probs)
         C[k] = X[idx]
     return C
 
@@ -166,7 +186,7 @@ class EKM(BaseEstimator, ClusterMixin):
             if isinstance(self.init, np.ndarray):
                 C = self.init.copy()
             elif self.init == 'plus':
-                C = _kmeans_plus_init(X, K, self.metric)
+                C = _kmeans_plus_init(X, K, self.metric, random_state=self.random_state)
             else:
                 raise ValueError("Unsupported init method.")
             C_old = C.copy()
@@ -302,7 +322,7 @@ class MiniBatchEKM(BaseEstimator, ClusterMixin):
         if isinstance(self.init, np.ndarray):
             C = self.init.astype(float).copy()
         elif self.init == 'plus':
-            C = _kmeans_plus_init(X, K, self.metric).astype(float)
+            C = _kmeans_plus_init(X, K, self.metric, random_state=self.random_state).astype(float)
         else:
             raise ValueError("Unsupported init method.")
         return C

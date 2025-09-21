@@ -2,7 +2,7 @@
 
 The detailed API is authored manually in Markdown to keep mathematical notation clean.
 
-- Core file: `ekm_sklearn.py`
+- Core file: `ekm_sklearn.py` (Euclidean k-means++ seeding now delegated to sklearn's implementation)
 - Full-batch: see [`ekm_api.md`](../ekm_api.md)
 - Mini-batch: also in [`ekm_api.md`](../ekm_api.md)
 - Chinese version: [`ekm_api_zh.md`](../ekm_api_zh.md)

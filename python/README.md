@@ -8,9 +8,10 @@ English | [中文说明](./README_zh.md) | API: [English](./ekm_api.md) | [中�
 
 | File | Purpose |
 |------|---------|
-| `ekm_sklearn.py` | Core implementation: full-batch `EKM` and `MiniBatchEKM` classes, plus helper functions (`_pairwise_distance`, k-means++ init, equilibrium weights). Supports optional numba acceleration (`use_numba=True`). |
+| `ekm_sklearn.py` | Core implementation: full-batch `EKM` and `MiniBatchEKM` classes, helper functions (`_pairwise_distance`, equilibrium weights). Uses sklearn's `kmeans_plusplus` for Euclidean initialization (falls back to internal routine for other metrics). Optional numba acceleration (`use_numba=True`). |
 | `example.py` | Quick start demo showing: (1) full-batch EKM with custom init, (2) MiniBatchEKM accumulation training with progress output. |
 | `benchmark.py` | Monte Carlo comparison between vanilla `KMeans` (sklearn) and `EKM` on a fixed imbalanced 3-cluster synthetic dataset (ARI & Silhouette). |
+| `benchmark_dirichlet_highdim.py` | High-dimensional Dirichlet-imbalanced benchmark (KMeans vs EKM) with ARI/NMI/SSE/Silhouette & optional plots. |
 | `benchmark_alphaSweep.py` | Sensitivity sweep of the scale parameter (effective alpha) for `EKM` versus `KMeans`; prints statistics and plots curves. |
 | `benchmark_minibatch_compare.py` | Compares full-batch `EKM` vs MiniBatchEKM (accumulation vs online / learning rate) on an imbalanced Gaussian dataset; reports timing + ARI + NMI + objective approximation. |
 | `benchmark_numba_ekm.py` | Benchmarks full-batch `EKM` with and without numba acceleration on a higher-dimensional imbalanced dataset; reports mean/std timings and speedup. |
@@ -112,6 +113,7 @@ python benchmark_numba_ekm.py
 ## File Details
 
 ### `ekm_sklearn.py`
+- Initialization: For `metric='euclidean'`, `init='plus'` now calls sklearn's robust `kmeans_plusplus` seeding (benefits from optimized C / parallel paths). For non-Euclidean metrics a safe Python fallback is used.
 - [`EKM`](./ekm_api.md#ekm-full-batch): Full-batch algorithm; parameters:
   - `alpha`: numeric or `'dvariance'` (auto-compute via data variance * `scale`).
   - `use_numba`: toggle accelerated weight computation.

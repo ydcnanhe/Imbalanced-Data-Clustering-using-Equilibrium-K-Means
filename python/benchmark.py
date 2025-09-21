@@ -25,13 +25,13 @@ for seed in range(N_REPEATS):
         cluster_std=STD, random_state=seed
     )
     # 2. KMeans
-    km = KMeans(n_clusters=N_CLUSTERS, n_init=10, random_state=seed)
+    km = KMeans(n_clusters=N_CLUSTERS, n_init=30, random_state=seed)
     labels_km = km.fit_predict(X)
     ari_results["KMeans"].append(adjusted_rand_score(y_true, labels_km))
     sil_results["KMeans"].append(silhouette_score(X, labels_km))
     # 3. EKM
     ekm = EKM(n_clusters=N_CLUSTERS, metric='euclidean',
-              alpha='dvariance', n_init=10, random_state=seed)
+              alpha='dvariance', n_init=30, random_state=seed)
     labels_ekm = ekm.fit_predict(X)
     ari_results["EKM"].append(adjusted_rand_score(y_true, labels_ekm))
     sil_results["EKM"].append(silhouette_score(X, labels_ekm))

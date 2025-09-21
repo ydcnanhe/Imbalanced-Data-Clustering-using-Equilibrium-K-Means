@@ -7,12 +7,13 @@
 ## 文件概览
 | 文件 | 说明 |
 |------|------|
-| `ekm_sklearn.py` | 核心实现：全量批 `EKM` 与 `MiniBatchEKM`，含 `_pairwise_distance`、k-means++ 初始化与权重计算。支持 `use_numba=True`。|
+| `ekm_sklearn.py` | 核心实现：全量批 `EKM` 与 `MiniBatchEKM`，含 `_pairwise_distance`、平衡权重计算。`metric='euclidean'` 且 `init='plus'` 时使用 sklearn `kmeans_plusplus`（更快更稳）；其它距离回退内部实现。支持 `use_numba=True`。|
 | `example.py` | 快速示例：演示全量批 EKM 以及 MiniBatchEKM 累积模式。|
 | `benchmark.py` | Monte Carlo：`KMeans` vs `EKM`（ARI 与 Silhouette）。|
 | `benchmark_alphaSweep.py` | 扫描 `scale`（影响自动 α）的敏感性。|
 | `benchmark_minibatch_compare.py` | 对比 Full Batch vs MiniBatch（累积 / 在线）性能（时间、ARI、NMI、objective）。|
 | `benchmark_numba_ekm.py` | 对比 EKM 在开启/关闭 numba 下的耗时与加速比。|
+| `benchmark_dirichlet_highdim.py` | 高维 Dirichlet 不平衡数据：KMeans vs EKM（ARI/NMI/SSE/Silhouette，支持绘图 & CSV）。|
 | `ekm_api.md` / `ekm_api_zh.md` | EKM 与 MiniBatchEKM API 文档（中英文）。|
 | `requirements.txt` | 运行依赖；可选安装 `numba`、`matplotlib`、以及文档依赖。|
 

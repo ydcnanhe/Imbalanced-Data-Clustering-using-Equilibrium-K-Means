@@ -36,7 +36,7 @@ Equilibrium K-Means 在标准 K-Means 的软分配基础上引入平衡校正项
 | `max_iter` | int | 500 | 单次运行最大迭代次数。|
 | `tol` | float | 1e-3 | 相对中心变化停止阈值。|
 | `n_init` | int | 1 | 多重随机重启次数；保留最好目标。|
-| `init` | `'plus'` 或 ndarray | `'plus'` | k-means++ 或用户自定义初始中心。|
+| `init` | `'plus'` 或 ndarray | `'plus'` | 欧式距离下调用 sklearn `kmeans_plusplus`；其它距离使用内部回退；也可自定义中心。|
 | `random_state` | int/None | None | 随机种子。|
 | `use_numba` | bool | False | 是否启用 numba 加速权重计算。|
 | `numba_threads` | int/None | None | 指定 numba 线程数。|
@@ -148,7 +148,7 @@ print(mb.objective_approx_[-3:])
 ---
 ## 公共工具函数
 - `_pairwise_distance(X, Y=None, metric)`: 计算成对距离（未平方）。
-- `_kmeans_plus_init(X, K, metric)`: k-means++ 初始中心。
+- `_kmeans_plus_init(X, K, metric)`: k-means++ 初始中心（欧式=sklearn，非欧式=fallback）。
 - `calc_weight(D2, alpha)`: 给定平方距离与 alpha 计算平衡权重（假定外部已做数值稳定处理）。
 
 ## 数值稳定策略
