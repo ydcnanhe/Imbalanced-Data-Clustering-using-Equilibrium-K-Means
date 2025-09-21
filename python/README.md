@@ -102,6 +102,7 @@ mkdocs build   # generate static site in site/
 2. `benchmark_alphaSweep.py`: Parameter sensitivity for `scale` (influences computed `alpha` when using `'dvariance'`).  
 3. `benchmark_minibatch_compare.py`: Timing + ARI/NMI for full-batch vs accumulation vs online mini-batch.  
 4. `benchmark_numba_ekm.py`: Timing comparison of `EKM` with vs without numba (reports speedup).  
+5. `benchmark_dirichlet_highdim`: High-dimensional Dirichlet-imbalanced benchmark (KMeans vs EKM) with ARI/NMI/SSE/Silhouette & optional plots.
 
 Run a benchmark (example):
 ```bash
@@ -135,6 +136,9 @@ Monte Carlo benchmark focusing on ARI and Silhouette distributions (boxplots) vs
 
 ### `benchmark_alphaSweep.py`
 Explores performance sensitivity to the scaling parameter (`scale`) controlling effective `alpha`.
+
+### `benchmark_dirichlet_highdim.py`
+High-dimensional Dirichlet-imbalanced benchmark (KMeans vs EKM) with ARI/NMI/SSE/Silhouette & optional plots.
 
 ## Recommended Hyperparameters
 

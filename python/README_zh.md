@@ -76,6 +76,7 @@ model.fit(X)
 2. `benchmark_alphaSweep.py`: `scale` 敏感性。
 3. `benchmark_minibatch_compare.py`: 全量 vs 累积 vs 在线。
 4. `benchmark_numba_ekm.py`: numba 加速对比。
+5. `benchmark_dirichlet_highdim`: 高维 Dirichlet 不平衡数据：KMeans vs EKM
 
 运行示例：
 ```bash
