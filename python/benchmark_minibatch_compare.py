@@ -13,7 +13,7 @@ except Exception:
 def make_imbalanced(seed=0):
     rng = np.random.RandomState(seed)
     # Three Gaussian clusters with heavy imbalance
-    n_big, n_mid, n_small = 2000, 200, 50
+    n_big, n_mid, n_small = 2000, 50, 30
     mu_big = np.array([-5.0, -2.0])
     mu_mid = np.array([0.0, 0.0])
     mu_small = np.array([5.0, 5.0])
