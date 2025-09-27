@@ -5,7 +5,7 @@ He Yudong, [An Equilibrium Approach to Clustering: Surpassing Fuzzy C-Means on I
 
 He Yudong, [Imbalanced Data Clustering Using Equilibrium K-Means](https://arxiv.org/abs/2402.14490v3), arXiv, 2024.
 
-A Python package "sklekmeans" that implement euilibrium k-means compatible with sklearn has been released. Check the [repo](https://github.com/ydcnanhe/sklearn-ekmeans) or [doc](https://ydcnanhe.github.io/sklearn-ekmeans/) or [PyPI project page](https://pypi.org/project/sklekmeans/) for more details.
+A Python package "sklekmeans" that implement euilibrium k-means, whose API is compatible with sklearn estimator, has been released. Check the [repo](https://github.com/ydcnanhe/sklearn-ekmeans) or [doc](https://ydcnanhe.github.io/sklearn-ekmeans/) or [PyPI project page](https://pypi.org/project/sklekmeans/) for more details.
 
 # Equilibrium K-Means: A K-Means-type Clustering Algorithm for Imbalanced Data
 ## The objective of EKM:
